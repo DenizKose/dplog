@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ store.store_name }}{% endblock %}
+{% block content %}
+<ul>
+    <li><b>Name:</b> {{ store.store_name }} <a href="{% url 'update_store' store.pk %}"><i class="bi bi-pencil-square"></i></a></li>
+    <li><b>Address:</b> {{ store.store_address }}</li>
+    <li><b>Operators:</b>
+        <ul>
+            {% for operator in operators %}
+            <li>{{ operator }} <a href="{% url 'admin_update_profile' operator.pk %}"><i class="bi bi-pencil-square"></i></a></li>
+            {% endfor %}
+        </ul>
+    </li>
+</ul>
+{% endblock %}

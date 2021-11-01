@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}New user{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+    <form method="post">
+    {% csrf_token %}
+        {{ admin_user_form.as_p }}
+        {{ admin_profile_form.as_p }}
+    <input type="submit" value="Submit">
+    </form>
+
+{% endblock %}

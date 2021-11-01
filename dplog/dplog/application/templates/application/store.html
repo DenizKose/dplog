@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Operator's applications {% endblock %}
+{% block content %}
+
+<h1 class="display-6">{{ store }}</h1>
+<ul class="nav nav-tabs" id="statuses" role="tablist">
+  {% if applications_new %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="new-tab" data-bs-toggle="tab" data-bs-target="#new" type="button" role="tab" aria-controls="new" aria-selected="true">
+        New <span class="badge bg-secondary rounded-pill bg-danger">{{ applications_new|length }}</span>
+    </button>
+  </li>
+  {% endif %}
+  {% if applications_collected %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="collecting-tab" data-bs-toggle="tab" data-bs-target="#collecting" type="button" role="tab" aria-controls="collecting" aria-selected="false">
+        Collecting <span class="badge bg-secondary rounded-pill bg-danger">{{ applications_collected|length }}</span>
+    </button>
+  </li>
+  {% endif %}
+  {% if applications_collecting %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="collected-tab" data-bs-toggle="tab" data-bs-target="#collected" type="button" role="tab" aria-controls="collected" aria-selected="false">
+        Collected <span class="badge bg-secondary rounded-pill bg-danger">{{ applications_collecting|length }}</span>
+    </button>
+  </li>
+  {% endif %}
+  {% if applications_waiting %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="waiting-delivery-tab" data-bs-toggle="tab" data-bs-target="#waiting" type="button" role="tab" aria-controls="waiting" aria-selected="false">
+        Waiting delivery <span class="badge bg-secondary rounded-pill bg-danger">{{ applications_waiting|length }}</span>
+    </button>
+  </li>
+  {% endif %}
+  {% if applications_delivered %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered" type="button" role="tab" aria-controls="delivered" aria-selected="false">
+        Delivered <span class="badge bg-secondary rounded-pill bg-danger">{{ applications_delivered|length }}</span>
+    </button>
+  </li>
+  {% endif %}
+</ul>
+<div class="tab-content" id="statuses">
+  <div class="tab-pane fade show active" id="new" role="tabpanel" aria-labelledby="new-tab">
+    {% if applications_new %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">1C ID</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Delivery time</th>
+                </tr>
+            </thead>
+        {% for application in applications_new %}
+                <tr>
+                    <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                        {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                        {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                        {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                    {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                    </th>
+                    <td>
+                        {% for 1c in  application.order_1c.rsplit %}
+                            {{ 1c }}<br>
+                            {% endfor %}
+                    </td>
+                    <td >
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                    </td>
+                    <td>
+                            <a class="btn btn-warning btn-sm" href="{% url 'application_change_status' application.store.pk application.pk %}">Change</a>
+                    </td>
+                    <td>{{ application.client }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                          Watch
+                        </button>
+                        <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  {{application.notes | escape}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ application.order_date }}
+                        <br>
+                        {% if application.order_time_start %}
+                            From {{ application.order_time_start }}
+                        {% endif %}
+                        <br>
+                        {% if application.order_time_end %}
+                            To {{ application.order_time_end }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+    <div>Nothing to show :(</div>
+    {% endif %}
+  </div>
+  <div class="tab-pane fade" id="collecting" role="tabpanel" aria-labelledby="collecting-tab">
+    {% if applications_collected %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">1C ID</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Delivery time</th>
+                </tr>
+            </thead>
+        {% for application in applications_collected %}
+                <tr>
+                    <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                        {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                        {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                        {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                    {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                    </th>
+                    <td>
+                        {% for 1c in  application.order_1c.rsplit %}
+                            {{ 1c }}<br>
+                            {% endfor %}
+                    </td>
+                    <td >
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                    </td>
+                    <td>
+                            <a class="btn btn-warning btn-sm" href="{% url 'application_change_status' application.store.pk application.pk %}">Change</a>
+                    </td>
+                    <td>{{ application.client }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                          Watch
+                        </button>
+                        <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  {{application.notes | escape}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ application.order_date }}
+                        <br>
+                        {% if application.order_time_start %}
+                            From {{ application.order_time_start }}
+                        {% endif %}
+                        <br>
+                        {% if application.order_time_end %}
+                            To {{ application.order_time_end }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+    <div>Nothing to show :(</div>
+    {% endif %}
+  </div>
+  <div class="tab-pane fade" id="collected" role="tabpanel" aria-labelledby="collected-tab">
+    {% if applications_collecting %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">1C ID</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Delivery time</th>
+                </tr>
+            </thead>
+        {% for application in applications_collecting %}
+                <tr>
+                    <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                        {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                        {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                        {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                    {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                    </th>
+                    <td>
+                        {% for 1c in  application.order_1c.rsplit %}
+                            {{ 1c }}<br>
+                            {% endfor %}
+                    </td>
+                    <td >
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                    </td>
+                    <td>
+                            <a class="btn btn-warning btn-sm" href="{% url 'application_change_status' application.store.pk application.pk %}">Change</a>
+                    </td>
+                    <td>{{ application.client }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                          Watch
+                        </button>
+                        <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  {{application.notes | escape}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ application.order_date }}
+                        <br>
+                        {% if application.order_time_start %}
+                            From {{ application.order_time_start }}
+                        {% endif %}
+                        <br>
+                        {% if application.order_time_end %}
+                            To {{ application.order_time_end }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+    <div>Nothing to show :(</div>
+    {% endif %}
+  </div>
+  <div class="tab-pane fade" id="waiting" role="tabpanel" aria-labelledby="waiting-tab">
+    {% if applications_waiting %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">1C ID</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Delivery time</th>
+                </tr>
+            </thead>
+        {% for application in applications_waiting %}
+                <tr>
+                    <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                        {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                        {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                        {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                    {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                    </th>
+                    <td>
+                        {% for 1c in  application.order_1c.rsplit %}
+                            {{ 1c }}<br>
+                            {% endfor %}
+                    </td>
+                    <td >
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                    </td>
+                    <td>
+                            <a class="btn btn-warning btn-sm" href="{% url 'application_change_status' application.store.pk application.pk %}">Change</a>
+                    </td>
+                    <td>{{ application.client }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                          Watch
+                        </button>
+                        <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  {{application.notes | escape}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ application.order_date }}
+                        <br>
+                        {% if application.order_time_start %}
+                            From {{ application.order_time_start }}
+                        {% endif %}
+                        <br>
+                        {% if application.order_time_end %}
+                            To {{ application.order_time_end }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+    <div>Nothing to show :(</div>
+    {% endif %}
+  </div>
+  <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="contact-tab">
+    {% if applications_delivered %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">1C ID</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Delivery time</th>
+                </tr>
+            </thead>
+        {% for application in applications_delivered%}
+                <tr>
+                    <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                        {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                        {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                        {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                        {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                    {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                    </th>
+                    <td>
+                        {% for 1c in  application.order_1c.rsplit %}
+                            {{ 1c }}<br>
+                            {% endfor %}
+                    </td>
+                    <td >
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                    </td>
+                    <td>
+                            <a class="btn btn-warning btn-sm" href="{% url 'application_change_status' application.store.pk application.pk %}">Change</a>
+                    </td>
+                    <td>{{ application.client }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                          Watch
+                        </button>
+                        <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  {{application.notes | escape}}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ application.order_date }}
+                        <br>
+                        {% if application.order_time_start %}
+                            From {{ application.order_time_start }}
+                        {% endif %}
+                        <br>
+                        {% if application.order_time_end %}
+                            To {{ application.order_time_end }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+    <div>Nothing to show :(</div>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+{% endblock %}

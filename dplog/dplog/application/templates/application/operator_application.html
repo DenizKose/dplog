@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col">
+        <ul class="list-group list-group-flush mt-3">
+          <li class="list-group-item"><b>Orders:</b> {{ application.order_1c }}</li>
+          <li class="list-group-item"><b>Manager:</b> {{ application.manager }}</li>
+          <li class="list-group-item"><b>Status:</b> {{ application.status }}</li>
+          <li class="list-group-item"><b>Client:</b> {{ application.client }}</li>
+          <li class="list-group-item"><b>Client name:</b> {{ application.client_person }}</li>
+          <li class="list-group-item"><b>Address:</b> {{ application.client_address }}{%  if application.client_address.address_notes  %}<br><i>Comment: {{ application.client_address.address_notes }}</i>{% endif %}</li>
+          <li class="list-group-item"><b>Store:</b> {{ application.store }}</li>
+          <li class="list-group-item">
+              <form method="post" class="row mt-3">
+                {% csrf_token %}
+                <div class="col-auto"><b>{{ status_form.status.label_tag }}</b></div>
+                <div class="col">{{ status_form.status }}
+                    <button type="submit" class="btn btn-primary mt-3">Change</button>
+                </div>
+              </form>
+          </li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="col-auto mt-3">
+            <b>Notes:</b> {{ application.notes }}
+        </div>
+        <div class="col-auto">
+            <b>{{ application.files.name }}</b>
+            {% for file in application.files.all %}
+                <a href="{{ file }}">{{ file.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}My applications{% endblock %}
+{% block content %}
+<div class="row col-auto">
+    <div class="col">
+        {% if application %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><b>ID:</b> {{ application.order }} {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}</li>
+                <li class="list-group-item"><b>Order 1C:</b> {{ application.order_1c }}</li>
+                <li class="list-group-item"><b>Manager:</b> {{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}{% endif %}</li>
+                <li class="list-group-item"><b>Driver:</b> {% if application.driver %}{{ application.driver.user.last_name }} {{ application.driver.user.first_name }}{% if application.driver.father_name %}{{ application.driver.father_name }}{% endif %}{% endif %}</li>
+                <li class="list-group-item"><b>Store:</b> {{ application.store }}</li>
+                <li class="list-group-item"><b>Client:</b> {{ application.client }}</li>
+                <li class="list-group-item"><b>Client name:</b> {{ application.client_person.client_person_name }} {% if application.client_person.client_person_tel%} <i>{{ application.client_person.client_person_tel }}</i>{% endif %}</li>
+                <li class="list-group-item"><b>Client address:</b> {{ application.client_address }}</li>
+                <li class="list-group-item"><b>Order date:</b> {{ application.order_date }} {% if application.order_time_start %}from {{ application.order_time_start }}{% endif %}{% if application.order_time_end %} to {{ application.order_time_end }}{% endif %}</li>
+            </ul>
+            {% if cancel_access %}
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" name="_cancel">Cancel</button>
+                </form>
+            {% endif %}
+            {% if delivered_access %}
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" name="_delivered">Delivered</button>
+                </form>
+            {% endif %}
+            {% if delivering_access %}
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" name="_delivering">Delivering</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <div>Nothing to show :(</div>
+        {% endif %}
+    </div>
+    <div class="col">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Notes:</b> {{ application.notes }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

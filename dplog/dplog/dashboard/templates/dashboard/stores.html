@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Stores{% endblock %}
+{% block content %}
+<ul>
+    {% for store in stores %}
+        <li><a href="{% url 'store' store.pk%}">{{ store.store_name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

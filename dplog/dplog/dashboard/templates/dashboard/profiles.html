@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profiles{% endblock %}
+{% block content %}
+{% if profiles %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Control</th>
+            </tr>
+        </thead>
+    {% for profile in profiles %}
+            <tr>
+                <th scope="col">{{ profile.pk }}</th>
+                <td>{{ profile }}</td>
+                <td>{{ profile.user.first_name }} {{ profile.user.last_name }} {% if profile.father_name %}{{ profile.father_name }}{% endif %}</td>
+                <td>{{ profile.status }}</td>
+                <td><a href="{% url 'admin_update_profile' profile.pk %}">Update</a></td>
+            </tr>
+    {% endfor %}
+    </table>
+</div>
+{% else %}
+    <div>Nothing to show :(</div>
+{% endif %}
+{% endblock %}

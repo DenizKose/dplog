@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+{% if applications %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">1C ID</th>
+                <th scope="col">Manager</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Client</th>
+                <th scope="col">Store</th>
+                <th scope="col">Notes</th>
+                <th scope="col">Delivery time</th>
+            </tr>
+        </thead>
+    {% for application in applications %}
+            <tr>
+                <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                    {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                    {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                    {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                </th>
+                <td>
+                    {% for 1c in  application.order_1c.rsplit %}
+                        {{ 1c }}<br>
+                        {% endfor %}
+                </td>
+                <td >
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                </td>
+                <td>
+                    {% if application.driver %}
+                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.driver.user.last_name }} {{ application.driver.user.first_name }} {% if application.driver.father_name %}{{ application.driver.father_name }}.{% endif %}">{{ application.driver.user.last_name }} {{ application.driver.user.first_name.0 }}.{% if application.driver.father_name %}{{ application.driver.father_name.0 }}.{% endif %}</span>
+                    {% endif %}
+                </td>
+                <td>{{ application.client }}</td>
+                <td>{{ application.store }}</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ application.pk }}">
+                      Watch
+                    </button>
+                    <div class="modal fade" id="exampleModal-{{ application.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                              {{application.notes | escape}}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </td>
+                <td>
+                    {{ application.order_date }} {% if application.order_time_start %} from {{ application.order_time_start }}{% endif %}{% if application.order_time_end %} to {{ application.order_time_end }}{% endif %}
+                </td>
+            </tr>
+    {% endfor %}
+    </table>
+</div>
+{% else %}
+    <div>Nothing to show :(</div>
+{% endif %}
+{% endblock %}

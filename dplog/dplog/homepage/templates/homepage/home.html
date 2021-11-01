@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{% static 'js/time.js' %}"></script>
+{% endblock %}
+{% block content %}
+<h1 class="display-1">Welcome,</h1>
+<h2 class="display-2">{{ name }}</h2>
+<h3 class="display-3">Today is <span id="date"></span></h3>
+<h3 class="display-3">Now is <span id="time"></span></h3>
+<h5 class="display-5">
+    <figure>
+      <blockquote class="blockquote">
+        <p>{{ quote}}</p>
+      </blockquote>
+      {% if quote_author %}
+      <figcaption class="blockquote-footer">
+        <cite title="{{ quote_author }}">{{ quote_author }}</cite>
+      </figcaption>
+      {% endif %}
+    </figure>
+</h5>
+{% endblock %}

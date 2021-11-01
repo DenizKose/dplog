@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+{% if applications %}
+<h1>Today routes</h1>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Manager</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Client</th>
+                <th scope="col">Store</th>
+                <th scope="col">Delivery time</th>
+            </tr>
+        </thead>
+    {% for application in applications %}
+            <tr>
+                <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                    {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                    {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                    {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>{% endif %}
+                </th>
+                <td>
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                </td>
+                <td>
+                    <span class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.driver.user.last_name }} {{ application.driver.user.first_name }} {% if application.driver.father_name %}{{ application.driver.father_name }}.{% endif %}">
+                        {{ application.driver.user.last_name }} {{ application.driver.user.first_name.0 }}.{% if application.driver.father_name %}{{ application.driver.father_name.0 }}.{% endif %}
+                    </span>
+                </td>
+                <td>{{ application.client }}</td>
+                <td>{{ application.store }}</td>
+                <td>
+                    {{ application.order_date }}
+                    <br>
+                    {% if application.order_time_start %}
+                        From {{ application.order_time_start }}
+                    {% endif %}
+                    <br>
+                    {% if application.order_time_end %}
+                        To {{ application.order_time_end }}
+                    {% endif %}
+                </td>
+            </tr>
+    {% endfor %}
+    </table>
+</div>
+{% else %}
+    <div><h1>No routes today</h1></div>
+{% endif %}
+{% if applications_tmrw %}
+<h1>Tomorrow routes</h1>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Manager</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Client</th>
+                <th scope="col">Store</th>
+                <th scope="col">Delivery time</th>
+            </tr>
+        </thead>
+    {% for application in applications_tmrw %}
+            <tr>
+                <th scope="col"><a href="{% url 'application' application.pk %}">{{ application.order }}</a>
+                    {% if application.status.pk == 1 %}<br><span class="badge bg-secondary">{{ application.status }}</span>
+                    {% elif application.status.pk == 2 %}<br><span class="badge bg-warning text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 3 %}<br><span class="badge bg-primary">{{ application.status }}</span>
+                    {% elif application.status.pk == 4 %}<br><span class="badge bg-info text-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 5 %}<br><span class="badge bg-success">{{ application.status }}</span>
+                {% elif application.status.pk == 6 %}<br><span class="badge bg-dark">{{ application.status }}</span>
+                    {% elif application.status.pk == 7 %}<br><span class="badge bg-danger">{{ application.status }}</span>
+                    {% elif application.status.pk == 8 %}<br><span class="badge bg-light text-dark">{{ application.status }}</span>{% endif %}
+                </th>
+                <td>
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.manager.user.last_name }} {{ application.manager.user.first_name }} {% if application.manager.father_name %}{{ application.manager.father_name }}.{% endif %}">{{ application.manager.user.last_name }} {{ application.manager.user.first_name.0 }}.{% if application.manager.father_name %}{{ application.manager.father_name.0 }}.{% endif %}</span>
+                </td>
+                <td>
+                    <span class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ application.driver.user.last_name }} {{ application.driver.user.first_name }} {% if application.driver.father_name %}{{ application.driver.father_name }}.{% endif %}">
+                        {{ application.driver.user.last_name }} {{ application.driver.user.first_name.0 }}.{% if application.driver.father_name %}{{ application.driver.father_name.0 }}.{% endif %}
+                    </span>
+                </td>
+                <td>{{ application.client }}</td>
+                <td>{{ application.store }}</td>
+                <td>
+                    {{ application.order_date }}
+                    <br>
+                    {% if application.order_time_start %}
+                        From {{ application.order_time_start }}
+                    {% endif %}
+                    <br>
+                    {% if application.order_time_end %}
+                        To {{ application.order_time_end }}
+                    {% endif %}
+                </td>
+            </tr>
+    {% endfor %}
+    </table>
+</div>
+{% else %}
+    <div><h1>No routes today</h1></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% load static %}
+
+{% url 'home' as home%}
+{% url 'get_all_applications' as applications_list %}
+{% url 'new_application' as new_app %}
+{% url 'my_applications' request.user as my_app %}
+{% url 'profile' request.user as profile_link %}
+{% url 'store_applications' request.user.pk as store_link %}
+{% url 'dashboard' as dashboard %}
+{% url 'applications_wo_dr' as apps_wo_drs %}
+{% url 'driver_applications' request.user.pk as driver_applications %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href={% static "css/bootstrap.css" %} rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+    <script src={% static "js/bootstrap.bundle.js" %}></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ home }}">Logistic</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == home %}active{% endif %}" aria-current="page" href="{{ home }}">Main</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == profile_link %}active{% endif %}" href="{{ profile_link }}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == driver_applications %}active{% endif %}" href="{{ driver_applications }}">Driver</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == apps_wo_drs %}active{% endif %}" href="{{ apps_wo_drs }}">Drivers Routes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == store_link %}active{% endif %}" href="{{ store_link }}">Store</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == dashboard %}active{% endif %}" href="{{ dashboard }}">Admin</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if new_app in request.path or applications_list in request.path %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Applications
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ applications_list }}">All applications</a></li>
+            <li><a class="dropdown-item" href="{{ my_app }}">My applications</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ new_app }}">Create application</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<body>
+<div class="container">
+{% autoescape off %}
+{% block content %}
+{% endblock %}
+{% endautoescape %}
+<footer>
+    <div class="row">
+        <div class="col">
+            {% block footer1 %}
+            {% endblock %}
+        </div>
+        <div class="col">
+            {% block footer2 %}
+            {% endblock %}
+        </div>
+    </div>
+</footer>
+</div>
+</body>
+</html>
